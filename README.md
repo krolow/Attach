@@ -9,8 +9,6 @@ To generate thumbs attach uses Imagine library: http://github.com/avalanche123/I
 Example:
 
 
-
-<?php
 App::uses('AppModel', 'Model');
 
 class Media extends AppModel {
@@ -100,4 +98,3 @@ class Media extends AppModel {
 		),
 	);
 
-?>
