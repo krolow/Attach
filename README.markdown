@@ -16,7 +16,6 @@ Attach contains one behavior that do everything for you, upload your file, resiz
 In a model that needs uploading, replace the class declaration with something similar to the following:
 
 <pre>
-<?php
 	App::uses('AppModel', 'Model');
 
 	class Media extends AppModel {
@@ -105,7 +104,6 @@ In a model that needs uploading, replace the class declaration with something si
 				),
 			),
 		);
-?>
 </pre>
 
 You also need to specify the fields in your database like so
@@ -123,7 +121,6 @@ CREATE TABLE  `attachments` (
 Create your upload view, make sure it's a multipart/form-data form, and the filename field is of type 'file':
 
 <pre>
-	<?php
 		echo $this->Form->create('Media', array('type' => 'file'));
 		echo $this->Form->input('name');
 		echo $this->Form->input('image', array('type' => 'file'));
@@ -131,7 +128,6 @@ Create your upload view, make sure it's a multipart/form-data form, and the file
 		echo $this->Form->input('zip', array('type' => 'file'));
 		echo $this->Form->input('status');
 		echo $this->Form->end(__('Submit'));
-	?>
 </pre>
 
 
@@ -139,11 +135,9 @@ Create your upload view, make sure it's a multipart/form-data form, and the file
 Attach creates automatic for you the relationship with the model Attachment, for each type that you define:
 
 <pre>
-	<?php
 		var_dump($this->Media->AttachmentImage);
 		var_dump($this->Media->AttachmentSwf);
 		var_dump($this->Media->AttachmentZip);
-	?>
 </pre>
 
 It will be always "Attachment" plus the type!
