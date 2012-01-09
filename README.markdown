@@ -20,69 +20,108 @@ In a model that needs uploading, replace the class declaration with something si
 
 	class Media extends AppModel {
 
-		public $validate = array(
-			'image' => array(
-				'extension' => array(
-				    'rule' => array(
-				        'extension', array(
-				            'jpg',
-				            'jpeg',     'image' => array(
-				'extension' => array(
-				    'rule' => array(
-				        'extension', array(
-				            'jpg',
-				            'jpeg',
-				            'bmp',
-				            'gif',
-				            'png',
-				            'jpg'
-				        )
-				    ),
-				    'message' => 'File extension is not supported',
-				    'on' => 'create'
-				),
-				'mime' => array(
-				    'rule' => array('mime', array(
-				        'image/jpeg',
-				        'image/pjpeg',
-				        'image/bmp',
-				        'image/x-ms-bmp',
-				        'image/gif',
-				        'image/png'
-				    )),
-				    'on' => 'create'
-				),
-				'size' => array(
-				    'rule' => array('size', 2097152),
-				    'on' => 'create'
-				)
+	public $validate = array(
+		'name' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+				'message' => 'Field can not be empty',
 			),
-				            'bmp',
-				            'gif',
-				            'png',
-				            'jpg'
-				        )
-				    ),
-				    'message' => 'File extension is not supported',
-				    'on' => 'create'
-				),
-				'mime' => array(
-				    'rule' => array('mime', array(
-				        'image/jpeg',
-				        'image/pjpeg',
-				        'image/bmp',
-				        'image/x-ms-bmp',
-				        'image/gif',
-				        'image/png'
-				    )),
-				    'on' => 'create'
-				),
-				'size' => array(
-				    'rule' => array('size', 2097152),
-				    'on' => 'create'
-				)
+			'isUnique' => array(
+				'rule' => array('isUnique'),
+				'message' => 'There is another media with same name',
 			),
-		);
+		),
+		'youtube' => array(
+			'notempty' => array(
+				'rule' => array('notempty'),
+				'message' => 'Field can not be empty',
+			),
+			'custom' => array(
+				'rule' => '#(?<=v=)[a-zA-Z0-9-]+(?=&)|(?<=v/)[^&\n]+(?=\?)|(?<=v=)[^&\n]+|(?<=youtu.be/)[^&\n]+#',
+				'message' => 'Is not a valid youtube URL',
+			)
+		),
+		'status' => array(
+			'boolean' => array(
+				'rule' => array('boolean'),
+				'message' => 'Field should be boolean',
+			),
+		),
+		'image' => array(
+			'extension' => array(
+				'rule' => array(
+					'extension', array(
+						'jpg',
+						'jpeg',
+						'bmp',
+						'gif',
+						'png',
+						'jpg'
+					)
+				),
+				'message' => 'File extension is not supported',
+				'on' => 'create'
+			),
+			'mime' => array(
+				'rule' => array('mime', array(
+					'image/jpeg',
+					'image/pjpeg',
+					'image/bmp',
+					'image/x-ms-bmp',
+					'image/gif',
+					'image/png'
+				)),
+				'on' => 'create'
+			),
+			'size' => array(
+				'rule' => array('size', 2097152),
+				'on' => 'create'
+			)
+		),
+		'swf' => array(
+			'extension' => array(
+				'rule' => array(
+					'extension', array(
+						'swf',
+					)
+				),
+				'message' => 'File extension is not supported',
+				'on' => 'create'
+			),
+			'mime' => array(
+				'rule' => array('mime', array(
+					'application/x-shockwave-flash',
+				)),
+				'on' => 'create'
+			),
+			'size' => array(
+				'rule' => array('size', 53687091200),
+				'on' => 'create'
+			)
+		),
+		'zip' => array(
+			'extension' => array(
+				'rule' => array(
+					'extension', array(
+						'zip',
+					)
+				),
+				'message' => 'File extension is not supported',
+				'on' => 'create'
+			),
+			'mime' => array(
+				'rule' => array('mime', array(
+					'application/zip',
+					'multipart/x-zip'
+				)),
+				'on' => 'create'
+			),
+			'size' => array(
+				'rule' => array('size', 53687091200),
+				'on' => 'create'
+			)
+		),
+	);
 
 		public $actsAs = array(
 			'Attach.Upload' => array(
