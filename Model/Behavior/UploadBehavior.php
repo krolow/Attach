@@ -93,7 +93,7 @@ class UploadBehavior extends ModelBehavior {
 	 * @access protected
 	 */
 	public function getFileExtension($filename) {
-		return end(explode('.', $filename));
+		return pathinfo($filename, PATHINFO_EXTENSION);
 	}
 
 	/**
