@@ -91,7 +91,7 @@ class UploadBehavior extends ModelBehavior {
 		$check = array_shift($check);
 
 		if (isset($check['tmp_name']) && is_file($check['tmp_name'])) {
-			$info = $this->getimagesize($check['tmp_name']);
+			$info = getimagesize($check['tmp_name']);
 
 			return ($info && $info[0] <= $width && $info[1] <= $height);
 		}
