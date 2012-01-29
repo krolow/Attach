@@ -78,6 +78,27 @@ class UploadBehavior extends ModelBehavior {
 		return $size >= $check['size'];
 	}
 
+    /**
+     * Check if the image fits within given dimensions
+     *
+     * @param array $check Array of data from the file that is been checked
+     * @param int $width Maximum width in pixels
+     * @param int $height Maximum height in pixels
+     * @return bool Return true if image fits withing given dimensions
+     * @access public
+     */
+    public function maxDimensions($model, $check, $width, $height) {
+		$check = array_shift($check);
+
+		if (isset($check['tmp_name']) && is_file($check['tmp_name'])) {
+			$info = getimagesize($check['tmp_name']);
+
+			return ($info && $info[0] <= $width && $info[1] <= $height);
+		}
+
+        return false;
+    }
+
 	public function getFileMime($model, $file) {
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
 		$info = finfo_file($finfo, $file);
@@ -175,9 +196,12 @@ class UploadBehavior extends ModelBehavior {
 		$this->deleteFile($dir . $attachment['filename']);
 
 		//check if exists thumbs to be deleted too
-		foreach (glob($dir . '*.' . $attachment['filename']) as $fileToDelete) {
-			$this->deleteFile($fileToDelete);
-		}
+        $files = glob($dir . '*.' . $attachment['filename']);
+        if (is_array($files)) {
+            foreach ($files as $fileToDelete) {
+                $this->deleteFile($fileToDelete);
+            }
+        }
 	}
 
 	public function deleteFile($filename) {
