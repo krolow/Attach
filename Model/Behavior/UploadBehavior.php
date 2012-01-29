@@ -196,9 +196,12 @@ class UploadBehavior extends ModelBehavior {
 		$this->deleteFile($dir . $attachment['filename']);
 
 		//check if exists thumbs to be deleted too
-		foreach (glob($dir . '*.' . $attachment['filename']) as $fileToDelete) {
-			$this->deleteFile($fileToDelete);
-		}
+        $files = glob($dir . '*.' . $attachment['filename']);
+        if (is_array($files)) {
+            foreach ($files as $fileToDelete) {
+                $this->deleteFile($fileToDelete);
+            }
+        }
 	}
 
 	public function deleteFile($filename) {
