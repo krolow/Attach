@@ -5,13 +5,13 @@ class UploadBehavior extends ModelBehavior {
 
 
 	public function setup(Model $model, $config = array()) {
-		$this->config = $config;
-		$this->types = array_keys($this->config);
+		$this->config[$model->alias] = $config;
+		$this->types[$model->alias] = array_keys($this->config[$model->alias]);
 
-		foreach ($this->types as $index => $type) {
+		foreach ($this->types[$model->alias] as $index => $type) {
 			$folder = $this->getUploadFolder($model, $type);
 			$this->isWritable($this->getUploadFolder($model, $type));
-			$this->setRelation($model, $this->types[$index]);
+			$this->setRelation($model, $this->types[$model->alias][$index]);
 		}
 	}
 
@@ -21,7 +21,7 @@ class UploadBehavior extends ModelBehavior {
 		$relation = 'hasOne';
 
 		//case is defined multiple is a hasMany
-		if (isset($this->config[$type]['multiple']) && $this->config[$type]['multiple'] == true) {
+		if (isset($this->config[$model->alias][$type]['multiple']) && $this->config[$model->alias][$type]['multiple'] == true) {
 			$relation = 'hasMany';
 		}
 
@@ -124,7 +124,7 @@ class UploadBehavior extends ModelBehavior {
 	 * @access public
 	 */
 	public function getUploadFolder($model, $type) {
-		return APP . str_replace('{DS}', DS, $this->config[$type]['dir']) . DS;
+		return APP . str_replace('{DS}', DS, $this->config[$model->alias][$type]['dir']) . DS;
 	}
 
 	public function isWritable($dir) {
@@ -137,7 +137,7 @@ class UploadBehavior extends ModelBehavior {
 
 
 	public function afterSave(Model $model, $created) {
-		foreach ($this->types as $type) {
+		foreach ($this->types[$model->alias] as $type) {
 			//case has the file update :)
 			if (isset($model->data[$model->alias][$type]['tmp_name']) &&
 				!empty($model->data[$model->alias][$type]['tmp_name'])) {
@@ -148,7 +148,7 @@ class UploadBehavior extends ModelBehavior {
 
 	public function beforeDelete($model, $cascade = true) {
 		if ($cascade = true) {
-			foreach ($this->types as $type) {
+			foreach ($this->types[$model->alias] as $type) {
 				$className = 'Attachment'. Inflector::camelize($type);
 
 				$attachments = $model->{$className}->find('all', array(
@@ -177,7 +177,7 @@ class UploadBehavior extends ModelBehavior {
 			copy($model->data[$model->alias][$type]['tmp_name'], $file);
 			@unlink($this->data[$model->alias][$type]['tmp_name']);
 
-			if (isset($this->config[$type]['thumbs'])) {
+			if (isset($this->config[$model->alias][$type]['thumbs'])) {
 				$info = getimagesize($file);
 				if (!$info) {
 					throw new CakeException(sprintf('The file %s is not an image', $file));
@@ -254,7 +254,7 @@ class UploadBehavior extends ModelBehavior {
 		$image = $imagine->open($file);
 
 		$thumbName = basename($file);
-		foreach ($this->config[$type]['thumbs'] as $key => $values) {
+		foreach ($this->config[$model->alias][$type]['thumbs'] as $key => $values) {
 			$this->__generateThumb(array(
 				'name' => str_replace($thumbName, $key . '.' . $thumbName, $file),
 				'w' => $values['w'],
