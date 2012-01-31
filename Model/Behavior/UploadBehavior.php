@@ -97,7 +97,7 @@ class UploadBehavior extends ModelBehavior {
 		}
 
 		return false;
-    }
+	}
 
 	public function getFileMime($model, $file) {
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
