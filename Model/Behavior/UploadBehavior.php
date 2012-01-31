@@ -87,7 +87,7 @@ class UploadBehavior extends ModelBehavior {
      * @return bool Return true if image fits withing given dimensions
      * @access public
      */
-    public function maxDimensions($model, $check, $width, $height) {
+	public function maxDimensions($model, $check, $width, $height) {
 		$check = array_shift($check);
 
 		if (isset($check['tmp_name']) && is_file($check['tmp_name'])) {
@@ -96,7 +96,7 @@ class UploadBehavior extends ModelBehavior {
 			return ($info && $info[0] <= $width && $info[1] <= $height);
 		}
 
-        return false;
+		return false;
     }
 
 	public function getFileMime($model, $file) {
