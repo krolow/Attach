@@ -16,12 +16,12 @@ class UploadBehavior extends ModelBehavior {
 	}
 
 	public function setRelation(Model $model, $type) {
-
 		$type = Inflector::camelize($type);
 		$relation = 'hasOne';
 
 		//case is defined multiple is a hasMany
-		if (isset($this->config[$model->alias][$type]['multiple']) && $this->config[$model->alias][$type]['multiple'] == true) {
+		if (isset($this->config[$model->alias][$type]['multiple'])
+			&& $this->config[$model->alias][$type]['multiple'] == true) {
 			$relation = 'hasMany';
 		}
 
@@ -30,7 +30,7 @@ class UploadBehavior extends ModelBehavior {
 			'foreignKey' => 'foreign_key',
 			'dependent' => true,
 			'conditions' => array(
-				'Attachment' . $type . '.model' => $model->name,
+				'Attachment' . $type . '.model' => $model->alias,
 				'Attachment' . $type . '.type' => strtolower($type)),
 			'fields' => '',
 			'order' => ''
@@ -138,10 +138,27 @@ class UploadBehavior extends ModelBehavior {
 
 	public function afterSave(Model $model, $created) {
 		foreach ($this->types[$model->alias] as $type) {
+			//set multiple as false by standard
+			$multiple = false;
+
+			if (isset($this->config[$model->alias][$type]['multiple'])
+				&& $this->config[$model->alias][$type]['multiple'] === true) {
+				$multiple = true;
+				$check = is_array($model->data[$model->alias][$type]);
+			} else {
+				$check = isset($model->data[$model->alias][$type]['tmp_name'])
+					&& !empty($model->data[$model->alias][$type]['tmp_name']);
+			}
+
 			//case has the file update :)
-			if (isset($model->data[$model->alias][$type]['tmp_name']) &&
-				!empty($model->data[$model->alias][$type]['tmp_name'])) {
-				$this->saveFile($model, $type);
+			if ($check) {
+				if ($multiple) {
+					foreach ($model->data[$model->alias][$type] as $index => $value) {
+						$this->saveFile($model, $type, $index);
+					}
+				} else {
+					$this->saveFile($model, $type);
+				}
 			}
 		}
 	}
@@ -167,23 +184,26 @@ class UploadBehavior extends ModelBehavior {
 		return $cascade;
 	}
 
-	public function saveFile(Model $model, $type) {
-		if (isset($model->data[$model->alias][$type]['tmp_name'])
-			&& !empty($model->data[$model->alias][$type]['tmp_name'])) {
-			$file = $this->generateName($model, $type);
-			$attach = $this->_saveAttachment($model, $type, $file);
+	public function saveFile(Model $model, $type, $index = null) {
+		$uploadData = $model->data[$model->alias][$type];
 
-			//move file
-			copy($model->data[$model->alias][$type]['tmp_name'], $file);
-			@unlink($this->data[$model->alias][$type]['tmp_name']);
+		if (!is_null($index)) {
+			$uploadData = $uploadData[$index];
+		}
 
-			if (isset($this->config[$model->alias][$type]['thumbs'])) {
-				$info = getimagesize($file);
-				if (!$info) {
-					throw new CakeException(sprintf('The file %s is not an image', $file));
-				}
-				$this->__createThumbs($file, $type);
+		$file = $this->generateName($model, $type, $index);
+		$attach = $this->_saveAttachment($model, $type, $file);
+
+		//move file
+		copy($uploadData['tmp_name'], $file);
+		@unlink($uploadData['tmp_name']);
+
+		if (isset($this->config[$model->alias][$type]['thumbs'])) {
+			$info = getimagesize($file);
+			if (!$info) {
+				throw new CakeException(sprintf('The file %s is not an image', $file));
 			}
+			$this->__createThumbs($model, $file, $type);
 		}
 	}
 
@@ -218,14 +238,15 @@ class UploadBehavior extends ModelBehavior {
 		$attachment = $model->{$className}->find('first', array(
 			'conditions' => array(
 				'foreign_key' => $model->id,
-				'model' => $model->name,
+				'model' => $model->alias,
 				'type' => $type,
+				'filename' => $filename,
 			),
 		));
 
 		$data = array(
 			$className => array(
-				'model' => $model->name,
+				'model' => $model->alias,
 				'foreign_key' => $model->id,
 				'filename' => basename($filename),
 				'type' => $type,
@@ -242,14 +263,23 @@ class UploadBehavior extends ModelBehavior {
 		$model->data += $model->{$className}->save($data);
 	}
 
-	public function generateName(Model $model, $type) {
+	public function generateName(Model $model, $type, $index = null) {
 		$dir = $this->getUploadFolder($model, $type);
-		$extension = $this->getFileExtension($model->data[$model->alias][$type]['name']);
+
+		if (is_null($index)) {
+			$extension = $this->getFileExtension($model->data[$model->alias][$type]['name']);
+		} else {
+			$extension = $this->getFileExtension($model->data[$model->alias][$type][$index]['name']);
+		}
+
+		if (!is_null($index)) {
+			return $dir . $type . '_' . $index . '_' . $model->id . '.' . $extension;
+		}
 
 		return $dir . $type . '_' . $model->id . '.' . $extension;
 	}
 
-	public function __createThumbs($file, $type) {
+	public function __createThumbs($model, $file, $type) {
 		$imagine = $this->getImagine();
 		$image = $imagine->open($file);
 
