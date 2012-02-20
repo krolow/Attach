@@ -1,27 +1,50 @@
 <?php
 App::uses('Attachment', 'Attach.Model');
 
-class UploadBehavior extends ModelBehavior {
+class UploadBehavior extends ModelBehavior
+{
 
-
-	public function setup(Model $model, $config = array()) {
+    /**
+     * Setup this behavior with the specified configuration settings.
+     *
+     * @param Model $model  Model using this behavior
+     * @param array $config Configuration settings for $model
+     *
+     * @return void
+     * @access public
+     */
+    public function setup(Model $model, $config = array())
+	{
 		$this->config[$model->alias] = $config;
-		$this->types[$model->alias] = array_keys($this->config[$model->alias]);
+		$this->types[$model->alias]  = array_keys($this->config[$model->alias]);
 
 		foreach ($this->types[$model->alias] as $index => $type) {
 			$folder = $this->getUploadFolder($model, $type);
 			$this->isWritable($this->getUploadFolder($model, $type));
-			$this->setRelation($model, $this->types[$model->alias][$index]);
+			$this->setRelationModel(
+			    $model,
+			    $this->types[$model->alias][$index]
+			);
 		}
 	}
 
-	public function setRelation(Model $model, $type) {
-		$type = Inflector::camelize($type);
+	/**
+	 * Create the relation bettween the model and the attachment model for each
+	 * type of file setted in the config
+	 *
+	 * @param Model  $model Model using this behavior
+	 * @param string $type  Type of the file upload
+	 *
+	 * @access protected
+	 * @return void
+	 */
+	protected function setRelationModel(Model $model, $type)
+	{
+		$type     = Inflector::camelize($type);
 		$relation = 'hasOne';
 
 		//case is defined multiple is a hasMany
-		if (isset($this->config[$model->alias][$type]['multiple'])
-			&& $this->config[$model->alias][$type]['multiple'] == true) {
+		if ($this->_isMultiple($model, $type)) {
 			$relation = 'hasMany';
 		}
 
@@ -38,16 +61,41 @@ class UploadBehavior extends ModelBehavior {
 	}
 
 	/**
+	 * Check if the given file type is multiple or not
+	 *
+	 * @param Model  $model Model using this behavior
+	 * @param string $type  Type of the file upload
+	 *
+	 * @access private
+	 * @return bool
+	 */
+	private function _isMultiple(Model $model, $type)
+	{
+        return isset($this->config[$model->alias][$type]['multiple'])
+		    && $this->config[$model->alias][$type]['multiple'] == true;
+	}
+
+	/**
 	 * Check if the file extension it's correct
 	 *
-	 * @param array $check Array of data from the file that is been checking
-	 * @return bool Return true in case of valid and false in case of invalid
+ 	 * @param Model $model      Model using this behavior
+	 * @param array $check      File to be checked
+	 * @param array $extensions The list of allowed extensions
+	 *
 	 * @access public
+	 * @return bool Return true in case of valid and false in case of invalid
 	 */
-	public function extension($model, $check, $extensions) {
+	public function extension(Model $model, $check, $extensions)
+	{
 		$check = array_shift($check);
+
 		if (isset($check['name'])) {
-			return in_array($this->getFileExtension($check['name']), $extensions);
+			return in_array(
+			    $this->getFileExtension(
+			        $check['name']
+			    ),
+			    $extensions
+			);
 		}
 
 		return false;
@@ -56,14 +104,18 @@ class UploadBehavior extends ModelBehavior {
 	/**
 	 * Check if the mime type it's correct
 	 *
-	 * @param array $check Array of data from the file that is been checking
-	 * @return bool Return true in case of valid and false in case of invalid
+ 	 * @param Model $model Model using this behavior
+	 * @param array $check File to be checked
+	 * @param array $mimes The list of allowed mime types
+	 *
 	 * @access public
+	 * @return bool Return true in case of valid and false in case of invalid
 	 */
-	public function mime($model, $check, $mimes) {
+	public function mime(Model $model, $check, $mimes)
+	{
 		$check = array_shift($check);
 
-		if (isset($check['tmp_name']) && is_file($check['tmp_name'])) {
+		if (isset($check['tmp_name']) && file_exists($check['tmp_name'])) {
 			$info = $this->getFileMime($model, $check['tmp_name']);
 
 			return in_array($info, $mimes);
@@ -72,88 +124,151 @@ class UploadBehavior extends ModelBehavior {
 		return false;
 	}
 
-	public function size($model, $check, $size) {
+	/**
+	* Check if the file size it's correct
+	*
+	* @param Model $model Model using this behavior
+	* @param array $check File to be checked
+	* @param array $size  The max size allowed
+	*
+	* @access public
+	* @return bool Return true in case of valid and false in case of invalid
+	*/
+	public function size(Model $model, $check, $size)
+	{
 		$check = array_shift($check);
 
 		return $size >= $check['size'];
 	}
 
-    /**
-     * Check if the image fits within given dimensions
-     *
-     * @param array $check Array of data from the file that is been checked
-     * @param int $width Maximum width in pixels
-     * @param int $height Maximum height in pixels
-     * @return bool Return true if image fits withing given dimensions
-     * @access public
-     */
-	public function maxDimensions($model, $check, $width, $height) {
+	/**
+	* Check if the image fits within given dimensions
+	*
+	* @param Model $model  Model using this behavior
+	* @param array $check  File to be checked
+    * @param int   $width  Maximum width in pixels
+    * @param int   $height Maximum height in pixels
+	*
+	* @access public
+	* @return  bool Return true if image fits withing given dimensions
+	*/
+    public function maxDimensions(Model $model, $check, $width, $height)
+    {
 		$check = array_shift($check);
 
-		if (isset($check['tmp_name']) && is_file($check['tmp_name'])) {
+		if (isset($check['tmp_name']) && file_exists($check['tmp_name'])) {
 			$info = getimagesize($check['tmp_name']);
 
 			return ($info && $info[0] <= $width && $info[1] <= $height);
 		}
 
-		return false;
-	}
+        return false;
+    }
 
-	public function getFileMime($model, $file) {
+    /**
+     * Return the mime type of the given file
+     *
+     * @param Model  $model Model using this behavior
+     * @param string $file  Path of file
+     *
+     * @access public
+     * @return string Mimetype
+     */
+	public function getFileMime(Model $model, $file)
+	{
 		$finfo = finfo_open(FILEINFO_MIME_TYPE);
-		$info = finfo_file($finfo, $file);
+		$info  = finfo_file($finfo, $file);
 
 		return $info;
 	}
 
 	/**
-	 * Check if the mime type it's correct
+	 * Get the file extension
 	 *
-	 * @param array $value Array of data from the file that is been checking
-	 * @return bool Return true in case of valid and false in case of invalid
-	 * @access protected
+	 * @param string $file File to be checked
+	 *
+	 * @return string File extension
+	 * @access public
 	 */
-	public function getFileExtension($filename) {
-		return pathinfo($filename, PATHINFO_EXTENSION);
+	public function getFileExtension($file)
+	{
+	    if (!file_exists($file)) {
+	        throw new CakeException(sprintf('File does not exists', $file));
+	    }
+
+		return pathinfo($file, PATHINFO_EXTENSION);
 	}
 
 	/**
-	 * Return the upload folder that was set
+	 * Return the upload folder that was set for the given type
+	 *
+	 * @param Model  $model Model using this behavior
+	 * @param string $type  Type of the file upload
 	 *
 	 * @return string Path for the upload folder
 	 * @access public
 	 */
-	public function getUploadFolder($model, $type) {
-		return APP . str_replace('{DS}', DS, $this->config[$model->alias][$type]['dir']) . DS;
+	public function getUploadFolder($model, $type)
+	{
+		return APP . str_replace(
+			'{DS}',
+		    DS,
+		    $this->config[$model->alias][$type]['dir']
+		) . DS;
 	}
 
-	public function isWritable($dir) {
+	/**
+	 * Return if the folder is writable
+	 *
+	 * @param string $dir Path of folder
+	 *
+	 * @throws CakeException case the folder is not writable
+	 *
+	 * @return bool return if the folder is writable
+	 * @access public
+	 */
+	public function isWritable($dir)
+	{
 		if (is_dir($dir) && is_writable($dir)) {
 			return true;
 		}
 
-		throw new Exception('Folder is not writable: ' .  $dir);
+		throw new CakeException(sprintf('Folder is not writable: %s',  $dir));
 	}
 
-
-	public function afterSave(Model $model, $created) {
+    /**
+     * afterSave is called after a model is saved.
+     *
+     * @param Model   $model   Model using this behavior
+     * @param boolean $created True if this save created a new record
+     *
+     * @return boolean
+     * @access public
+     */
+	public function afterSave(Model $model, $created)
+	{
 		foreach ($this->types[$model->alias] as $type) {
-			//set multiple as false by standard
-			$multiple = false;
 
-			if (isset($this->config[$model->alias][$type]['multiple'])
-				&& $this->config[$model->alias][$type]['multiple'] === true) {
-				$multiple = true;
-				$check = is_array($model->data[$model->alias][$type]);
+		    $data = $model->data;
+
+			//set multiple as false by standard
+			$this->{$model->alias}->multiple = false;
+
+			if ($this->_isMultiple($model, $type)) {
+				$this->{$model->alias}->multiple = true;
+
+				$check = isset($data[$model->alias])
+				    && isset($data[$model->alias][$type])
+				    && is_array($data[$model->alias][$type]);
 			} else {
-				$check = isset($model->data[$model->alias][$type]['tmp_name'])
-					&& !empty($model->data[$model->alias][$type]['tmp_name']);
+				$check = isset($data[$model->alias][$type]['tmp_name'])
+					&& !empty($data[$model->alias][$type]['tmp_name']);
 			}
 
 			//case has the file update :)
 			if ($check) {
-				if ($multiple) {
-					foreach ($model->data[$model->alias][$type] as $index => $value) {
+				if ($this->{$model->alias}->multiple) {
+					foreach ($data[$model->alias][$type] as $index => $value) {
 						$this->saveFile($model, $type, $index);
 					}
 				} else {
@@ -163,17 +278,32 @@ class UploadBehavior extends ModelBehavior {
 		}
 	}
 
-	public function beforeDelete($model, $cascade = true) {
+    /**
+     * Before delete is called before any delete occurs on the attached model,
+     * but after the model's beforeDelete is called.
+     * Returning false from a beforeDelete will abort the delete.
+     *
+     * @param Model   $model   Model using this behavior
+     * @param boolean $cascade If true records that depend on this record will also be deleted
+     *
+     * @return mixed False if the operation should abort. Any other result will continue.
+     * @access public
+     */
+	public function beforeDelete($model, $cascade = true)
+	{
 		if ($cascade = true) {
 			foreach ($this->types[$model->alias] as $type) {
 				$className = 'Attachment'. Inflector::camelize($type);
 
-				$attachments = $model->{$className}->find('all', array(
-					'conditions' => array(
-						'model' => $model->name,
-						'foreign_key' => $model->id,
-					),
-				));
+				$attachments = $model->{$className}->find(
+					'all',
+					array(
+						'conditions' => array(
+							'model' => $model->alias,
+							'foreign_key' => $model->id,
+					    ),
+				    )
+				);
 
 				foreach ($attachments as $attach) {
 					$this->deleteAllFiles($model, $attach);
@@ -184,30 +314,59 @@ class UploadBehavior extends ModelBehavior {
 		return $cascade;
 	}
 
-	public function saveFile(Model $model, $type, $index = null) {
+	/**
+	 * Save the given type of file
+	 *
+	 * @param Model  $model Model using this behavior
+	 * @param string $type  Type of the file upload
+	 * @param int    $index Case is multiple send the index of data
+	 *
+	 * @throws CakeException case the file is not one image
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function saveFile(Model $model, $type, $index = null)
+	{
 		$uploadData = $model->data[$model->alias][$type];
 
 		if (!is_null($index)) {
-			$uploadData = $uploadData[$index];
+		    $uploadData = $uploadData[$index];
 		}
 
-		$file = $this->generateName($model, $type, $index);
-		$attach = $this->_saveAttachment($model, $type, $file);
+		if (!isset($uploadData['tmp_name']) || empty($uploadData['tmp_name'])) {
+		    return;
+		}
 
-		//move file
-		copy($uploadData['tmp_name'], $file);
-		@unlink($uploadData['tmp_name']);
+		$file   = $this->generateName($model, $type, $index);
+		$attach = $this->saveAttachment($model, $type, $file);
 
-		if (isset($this->config[$model->alias][$type]['thumbs'])) {
-			$info = getimagesize($file);
-			if (!$info) {
-				throw new CakeException(sprintf('The file %s is not an image', $file));
-			}
-			$this->__createThumbs($model, $file, $type);
+		if (!empty($uploadData['tmp_name'])) {
+
+    		//move file
+    		copy($uploadData['tmp_name'], $file);
+    		$this->deleteFile($uploadData['tmp_name']);
+
+    		if (isset($this->config[$model->alias][$type]['thumbs'])) {
+    			$info = getimagesize($file);
+    			if (!$info) {
+    				throw new CakeException(
+    				    sprintf('The file %s is not an image', $file)
+    				);
+    			}
+    		}
 		}
 	}
-
-	public function deleteAllFiles($model, $attachment) {
+	/**
+	* Save the given type of file
+	*
+	* @param Model $model      Model using this behavior
+	* @param mixed $attachment Attachment to be deleted
+	*
+	* @return void
+	*/
+	public function deleteAllFiles(Model $model, $attachment)
+	{
 		$attachment = array_shift($attachment);
 
 		$dir = $this->getUploadFolder($model, $attachment['type']);
@@ -216,33 +375,60 @@ class UploadBehavior extends ModelBehavior {
 		$this->deleteFile($dir . $attachment['filename']);
 
 		//check if exists thumbs to be deleted too
-		$files = glob($dir . '*.' . $attachment['filename']);
-		if (is_array($files)) {
-			foreach ($files as $fileToDelete) {
-				$this->deleteFile($fileToDelete);
-			}
-		}
+        $files = glob($dir . '*.' . $attachment['filename']);
+        if (is_array($files)) {
+            foreach ($files as $fileToDelete) {
+                $this->deleteFile($fileToDelete);
+            }
+        }
 	}
 
-	public function deleteFile($filename) {
-		if (file_exists($filename)) {
-			return unlink($filename);
+	/**
+	 * Delete the specific given file
+	 *
+	 * @param string $file File to be checked
+	 *
+	 * @return bool true case was deleted with success
+	 */
+	public function deleteFile($file)
+	{
+		if (file_exists($file)) {
+			return unlink($file);
 		}
 
 		return false;
 	}
 
-	protected function _saveAttachment(Model $model, $type, $filename, $edit = null) {
+	/**
+	 * Insert attachment into the database
+     *
+	 * @param Model  $model    Model using this behavior
+	 * @param string $type     Type of the file upload
+	 * @param string $filename Filename to be saved
+	 *
+	 * @return void
+	 */
+	protected function saveAttachment(
+	    Model $model,
+	    $type,
+	    $filename
+    ) {
 		$className = 'Attachment'. Inflector::camelize($type);
 
-		$attachment = $model->{$className}->find('first', array(
-			'conditions' => array(
-				'foreign_key' => $model->id,
-				'model' => $model->alias,
-				'type' => $type,
-				'filename' => $filename,
-			),
-		));
+		$attachment = false;
+
+        if ($this->_isMultiple($model, $type)) {
+    		$attachment = $model->{$className}->find(
+    			'first',
+			    array(
+    				'conditions' => array(
+    					'foreign_key' => $model->id,
+    					'model' => $model->alias,
+    					'type' => $type,
+    			    ),
+    		    )
+    		);
+        }
 
 		$data = array(
 			$className => array(
@@ -253,7 +439,7 @@ class UploadBehavior extends ModelBehavior {
 			),
 		);
 
-		if ($attachment) {
+		if ($attachment !== false) {
 			$this->deleteAllFiles($model, $attachment);
 			$data[$className]['id'] = $attachment[$className]['id'];
 		} else {
@@ -263,70 +449,155 @@ class UploadBehavior extends ModelBehavior {
 		$model->data += $model->{$className}->save($data);
 	}
 
-	public function generateName(Model $model, $type, $index = null) {
+	/**
+	 * Generate an unique name to save the file
+	 *
+	 * @param Model  $model Model using this behavior
+	 * @param string $type  Type of the file upload
+	 * @param int    $index Case is multiple send the index of data
+	 *
+	 * @return string Generated name
+	 * @access public
+	 */
+	public function generateName(Model $model, $type, $index = null)
+	{
+
 		$dir = $this->getUploadFolder($model, $type);
 
 		if (is_null($index)) {
-			$extension = $this->getFileExtension($model->data[$model->alias][$type]['name']);
+			$extension = $this->getFileExtension(
+			    $model->data[$model->alias][$type]['name']
+			);
 		} else {
-			$extension = $this->getFileExtension($model->data[$model->alias][$type][$index]['name']);
+			$extension = $this->getFileExtension(
+			    $model->data[$model->alias][$type][$index]['name']
+			);
 		}
 
 		if (!is_null($index)) {
-			return $dir . $type . '_' . $index . '_' . $model->id . '.' . $extension;
+			return $dir . String::uuid() . '.' . $extension;
 		}
 
-		return $dir . $type . '_' . $model->id . '.' . $extension;
+		return $dir . $type . '_' . String::uuid() . '.' . $extension;
 	}
 
-	public function __createThumbs($model, $file, $type) {
-		$imagine = $this->getImagine();
-		$image = $imagine->open($file);
-
+	/**
+	 * Create thumbs for the given image based in the config
+	 * defined in the model
+	 *
+	 * @param Model  $model Model using this behavior
+	 * @param string $type  Type of the file upload
+	 * @param string $file  Image file
+	 *
+	 * @return void
+	 * @access protected
+	 */
+	protected function createThumbs($model, $type, $file)
+	{
+		$imagine   = $this->_getImagine();
+		$image     = $imagine->open($file);
 		$thumbName = basename($file);
-		foreach ($this->config[$model->alias][$type]['thumbs'] as $key => $values) {
-			$this->__generateThumb(array(
-				'name' => str_replace($thumbName, $key . '.' . $thumbName, $file),
-				'w' => $values['w'],
-				'h' => $values['h'],
-			), $image, $values['crop']);
+		$thumbs    = $this->config[$model->alias][$type]['thumbs'];
+
+		foreach ($thumbs as $key => $values) {
+			$this->__generateThumb(
+			    array(
+					'name' => str_replace(
+					    $thumbName,
+					    $key . '.' . $thumbName,
+					    $file
+				    ),
+					'w' => $values['w'],
+					'h' => $values['h'],
+			    ),
+			    $image,
+			    $values['crop']
+			);
 		}
 	}
 
-	private function getImagine() {
+	/**
+	 * Create a thumb for the given image file based in the parameters passed
+	 *
+	 * @param string $file   Image file
+	 * @param string $name   Name of the thumb
+	 * @param float  $width  Width of thumb
+	 * @param float  $height Height of thumb
+	 * @param bool   $crop   Crop the image
+	 *
+	 * @return void
+	 * @access public
+	 */
+	public function createThumb($file, $name, $width, $height, $crop = false)
+	{
+	    $imagine = $this->getImagine();
+	    $image   = $imagine->open($file);
+
+	    $this->__generateThumb(
+	        array(
+				'w' => $width,
+				'h' => $height,
+				'name' => $name,
+	        ),
+	        $image,
+	        $crop
+	    );
+	}
+
+
+	/**
+	 * Load the imagine library
+	 *
+	 * @throws CakeException
+	 *
+	 * @return \Imagine\Gd\Imagine
+	 * @access private
+	 */
+	private function _getImagine()
+	{
 		if (!interface_exists('Imagine\Image\ImageInterface')) {
-			if (is_file(VENDORS . 'imagine.phar')) {
-				require_once 'phar://' . VENDORS . 'imagine.phar';
+			if (file_exists(VENDORS . 'imagine.phar')) {
+				include_once 'phar://' . VENDORS . 'imagine.phar';
 			} else {
-				throw new CakeException(sprintf('You should add in your vendors folder %s, the imagine.phar,
-				you can download here: https://github.com/avalanche123/Imagine', VENDORS));
+				throw new CakeException(
+				    sprintf(
+						'You should add in your vendors folder %s, the imagine.phar, you can download here: https://github.com/avalanche123/Imagine',
+				        VENDORS
+				    )
+				);
 			}
 		}
 
 		return new \Imagine\Gd\Imagine();
 	}
 
-	public function createThumb($filename, $name, $width, $height, $crop = false) {
-		$imagine = $this->getImagine();
-		$image = $imagine->open($filename);
-
-		$this->__generateThumb(array(
-			'w' => $width,
-			'h' => $height,
-			'name' => $name,
-		), $image, $crop);
-	}
-
-	private function __generateThumb($thumb, $image, $crop = false) {
+	/**
+	 * Generate the thumb
+	 *
+	 * @param mixed  $thumb 'width', 'height' and 'name'
+	 * @param string $image image file
+	 * @param bool   $crop  Crop the image
+	 *
+	 * @return void
+	 * @access private
+	 */
+	private function _generateThumb($thumb, $image, $crop = false)
+	{
 		if ($crop) {
 			$mode =  Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
 		} else {
 			$mode = Imagine\Image\ImageInterface::THUMBNAIL_INSET;
 		}
 
-		$thumbnail = $image->thumbnail(new Imagine\Image\Box($thumb['w'], $thumb['h']), $mode);
+		$thumbnail = $image->thumbnail(
+		    new Imagine\Image\Box(
+		        $thumb['w'],
+		        $thumb['h']
+		    ),
+		    $mode
+		);
+
 		$thumbnail->save($thumb['name']);
 	}
 
 }
-?>
