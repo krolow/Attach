@@ -92,6 +92,67 @@ class UploadBehavior extends ModelBehavior
 	}
 
 	/**
+	 * Check if it's necessary validate the file
+	 *
+	 * @param Model  $model      Model using this behavior
+	 * @param string $validation Name of the validation
+	 * @param array  $check      Data array of file
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function shouldValidate($model, $validation, $check)
+	{
+	    if ($this->isPostFileDataEmpty($model, $check)) {
+	        return !$this->isRequired($model, $validation, $check);
+	    }
+
+	    return false;
+	}
+
+	/**
+	 * Check if the given data is empty
+	 *
+	 * @param Model $model Model using this behavior
+	 * @param array $file  File data
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function isPostFileDataEmpty($model, $file)
+	{
+	    if (!is_array($file)) {
+	        return false;
+	    }
+	    $file = array_shift($file);
+
+	    return empty($file['name']) && $file['size'] === 0;
+	}
+
+	/**
+	 * Check if the file is required
+	 *
+	 * @param Model  $model      Model using this behavior
+	 * @param stirng $validation Method name
+	 * @param array  $check      Data arary of file
+	 *
+	 * @access public
+	 * @return boolean
+	 */
+	public function isRequired($model, $validation, $check)
+	{
+	    $key = key($check);
+
+	    if (!isset($model->validate[$key])
+            || !isset($model->validate[$key]['required'])
+        ) {
+	        return false;
+	    }
+
+	    return (bool) $model->validate[$key]['required'];
+	}
+
+	/**
 	 * Check if the file extension it's correct
 	 *
  	 * @param Model $model      Model using this behavior
@@ -103,6 +164,11 @@ class UploadBehavior extends ModelBehavior
 	 */
 	public function extension(Model $model, $check, $extensions)
 	{
+
+	    if ($this->shouldValidate($model, __METHOD__, $check)) {
+	        return true;
+	    }
+
 		$check = array_shift($check);
 
 		if (isset($check['name'])) {
@@ -129,6 +195,10 @@ class UploadBehavior extends ModelBehavior
 	 */
 	public function mime(Model $model, $check, $mimes)
 	{
+	    if ($this->shouldValidate($model, __METHOD__, $check)) {
+	        return true;
+	    }
+
 		$check = array_shift($check);
 
 		if (isset($check['tmp_name']) && file_exists($check['tmp_name'])) {
@@ -152,6 +222,10 @@ class UploadBehavior extends ModelBehavior
 	*/
 	public function size(Model $model, $check, $size)
 	{
+	    if ($this->shouldValidate($model, __METHOD__, $check)) {
+	        return true;
+	    }
+
 		$check = array_shift($check);
 
 		return $size >= $check['size'];
@@ -170,6 +244,10 @@ class UploadBehavior extends ModelBehavior
 	*/
     public function maxDimensions(Model $model, $check, $width, $height)
     {
+        if ($this->shouldValidate($model, __METHOD__, $check)) {
+            return true;
+        }
+
 		$check = array_shift($check);
 
 		if (isset($check['tmp_name']) && file_exists($check['tmp_name'])) {
