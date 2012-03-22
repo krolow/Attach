@@ -1,5 +1,22 @@
 <?php
-class AttachmentSchema extends CakeSchema {
+/**
+* Attachment schema
+*
+*
+* PHP 5.3
+*
+*
+* Licensed under The MIT License
+* Redistributions of files must retain the above copyright notice.
+*
+* @link          https://github.com/krolow/Attach
+* @package       Attach.Model.UploadBehavior
+* @author		 Vinícius Krolow <krolow@gmail.com>
+* @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+*/
+Ap
+class AttachmentSchema extends CakeSchema
+{
 
 	public function before($event = array()) {
 		return true;
