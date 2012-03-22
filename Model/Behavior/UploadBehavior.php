@@ -1,4 +1,20 @@
 <?php
+/**
+* Upload for CakePHP.
+*
+*
+* PHP 5.3
+*
+*
+* Licensed under The MIT License
+* Redistributions of files must retain the above copyright notice.
+*
+* @link          https://github.com/krolow/Attach
+* @package       Attach.Model.UploadBehavior
+* @author		 Vinícius Krolow <krolow@gmail.com>
+* @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
+*/
+
 App::uses('Attachment', 'Attach.Model');
 
 class UploadBehavior extends ModelBehavior
