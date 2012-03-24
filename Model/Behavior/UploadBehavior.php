@@ -329,7 +329,7 @@ class UploadBehavior extends ModelBehavior
         }
 
         $file   = $this->generateName($model, $type, $index);
-        $attach = $this->_saveAttachment($model, $type, $file);
+        $attach = $this->saveAttachment($model, $type, $file);
 
         //move file
         copy($uploadData['tmp_name'], $file);
@@ -344,7 +344,7 @@ class UploadBehavior extends ModelBehavior
                     sprintf('The file %s is not an image', $file)
                 );
             }
-            $this->__createThumbs($model, $file, $type);
+            $this->createThumbs($model, $file, $type);
         }
     }
 
@@ -392,7 +392,7 @@ class UploadBehavior extends ModelBehavior
     }
 
     /**
-     * _saveAttachment
+     * saveAttachment
      *
      * @param Model  $model    Related model
      * @param Array  $type     Type comment
@@ -402,7 +402,7 @@ class UploadBehavior extends ModelBehavior
      * @todo Really doc method
      * @return void
      */
-    protected function _saveAttachment(
+    protected function saveAttachment(
         Model $model, $type, $filename, $edit = null
     ) {
         $className = 'Attachment'. Inflector::camelize($type);
@@ -471,18 +471,18 @@ class UploadBehavior extends ModelBehavior
     }
 
     /**
-     * __createThumb
+     * createThumb
      *
      * @param Model  $model Related model
      * @param String $file  File comment
      * @param Array  $type  Type comment
      * 
-     * @todo Really doc method and remove __ prefix
+     * @todo Really doc method and remove
      * @return void
      */
-    public function __createThumbs($model, $file, $type)
+    public function createThumbs($model, $file, $type)
     {
-        $imagine = $this->getImagine();
+        $imagine = $this->_getImagine();
         $image   = $imagine->open($file);
 
         $thumbName = basename($file);
@@ -490,7 +490,7 @@ class UploadBehavior extends ModelBehavior
 
         foreach ($types as $key => $values) {
 
-            $this->__generateThumb(
+            $this->_generateThumb(
                 array(
                     'name' => str_replace(
                         $thumbName,
@@ -506,16 +506,16 @@ class UploadBehavior extends ModelBehavior
     }
     
     /**
-     * getImagine method
+     * _getImagine method
      *
      * @todo Really doc method, use submodule instead phar
      * @return Imagine
      */
-    private function getImagine()
+    private function _getImagine()
     {
         if (!interface_exists('Imagine\Image\ImageInterface')) {
             if (is_file(VENDORS . 'imagine.phar')) {
-                require_once 'phar://' . VENDORS . 'imagine.phar';
+                include_once 'phar://' . VENDORS . 'imagine.phar';
             } else {
 
                 $textException = 'You should add in your vendors folder %s, 
@@ -544,10 +544,10 @@ class UploadBehavior extends ModelBehavior
     public function createThumb(
         $filename, $name, $width, $height, $crop = false
     ) {
-        $imagine = $this->getImagine();
+        $imagine = $this->_getImagine();
         $image   = $imagine->open($filename);
 
-        $this->__generateThumb(
+        $this->_generateThumb(
             array(
                 'w' => $width,
                 'h' => $height,
@@ -568,7 +568,7 @@ class UploadBehavior extends ModelBehavior
      * @todo Really doc method and remove __ prefix
      * @return void
      */
-    private function __generateThumb($thumb, $image, $crop = false)
+    private function _generateThumb($thumb, $image, $crop = false)
     {
         if ($crop) {
             $mode =  Imagine\Image\ImageInterface::THUMBNAIL_OUTBOUND;
