@@ -1,24 +1,26 @@
 <?php
 /**
-* Attachment model
-*
-*
-* PHP 5.3
-*
-*
-* Licensed under The MIT License
-* Redistributions of files must retain the above copyright notice.
-*
-* @link          https://github.com/krolow/Attach
-* @package       Attach.Model.UploadBehavior
-* @author		 Vinícius Krolow <krolow@gmail.com>
-* @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
-*/
+ * Attachment Model
+ * 
+ * PHP Version 5.3+
+ *
+ * @category Plugin
+ * @package  Attachment.Model
+ * @author   Vinícius Krolow <krolow@gmail.com>
+ * @license  GNU GENERAL PUBLIC LICENSE
+ * @link     https://github.com/krolow/Attach
+ */
+
 App::uses('AppModel', 'Model');
 
 /**
  * Attachment Model
- *
+ * 
+ * @category Plugin
+ * @package  Attachment.Model
+ * @author   Vinícius Krolow <krolow@gmail.com>
+ * @license  GNU GENERAL PUBLIC LICENSE
+ * @link     https://github.com/krolow/Attach
  */
 class Attachment extends AppModel
 {
@@ -27,29 +29,47 @@ class Attachment extends AppModel
      *
      * @var string
      */
-	public $displayField = 'id';
+    public $displayField = 'id';
 
     /**
      * Validation rules
      *
      * @var array
      */
-	public $validate = array(
-		'filename' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-			),
-		),
-		'model' => array(
-			'notempty' => array(
-				'rule' => array('notempty'),
-			),
-		),
-		'foreign_key' => array(
-			'numeric' => array(
-				'rule' => array('numeric'),
-			),
-		),
-	);
-
+    public $validate = array(
+        'filename' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                'message' => 'Filename cannot be empty',
+                //'allowEmpty' => false,
+                //'required' => false,
+                //'last' => false, // Stop validation after this rule
+                //'on' => 'create', // Limit validation to 'create' or 
+                //'update' operations
+            ),
+        ),
+        'model' => array(
+            'notempty' => array(
+                'rule' => array('notempty'),
+                //'message' => 'Your custom message here',
+                //'allowEmpty' => false,
+                //'required' => false,
+                //'last' => false, // Stop validation after this rule
+                //'on' => 'create', // Limit validation to 'create' or 
+                //'update' operations
+            ),
+        ),
+        'foreign_key' => array(
+            'numeric' => array(
+                'rule' => array('numeric'),
+                //'message' => 'Your custom message here',
+                //'allowEmpty' => false,
+                //'required' => false,
+                //'last' => false, // Stop validation after this rule
+                //'on' => 'create', // Limit validation to 'create' or 
+                //'update' operations
+            ),
+        ),
+    );
 }
+
