@@ -240,10 +240,10 @@ class UploadBehavior extends ModelBehavior {
 				'foreign_key' => $model->id,
 				'model' => $model->alias,
 				'type' => $type,
-				'filename' => $filename,
+				'filename' => basename($filename),
 			),
 		));
-
+		
 		$data = array(
 			$className => array(
 				'model' => $model->alias,
