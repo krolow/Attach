@@ -1,8 +1,13 @@
-# Attach 0.1
+# Attach 1.0
 
 Attach is a CakePHP 2.0 Plugin, that make your upload a simple task!
 
 Attach contains one behavior that do everything for you, upload your file, resize your image.
+
+## Requiriments
+
+- PHP 5.3 or >
+- CakePHP 2.0 or >
 
 ## Installation
 - Clone from github : in your app directory type `git clone git@github.com:krolow/Attach.git Plugin/Attach`
