@@ -267,6 +267,34 @@ class UploadBehavior extends ModelBehavior
     }
 
     /**
+     * Check if the image fits within given dimensions
+     *
+     * @param Model $model  Model using this behavior
+     * @param mixed $check  File to be checked
+     * @param mixed $width  Minimum width in pixels
+     * @param mixed $height Minimum height in pixels
+     *
+     * @access public
+     * @return bool Return true if image fits within given dimensions
+     */
+    public function minDimensions(Model $model, $check, $width, $height)
+    {
+        if ($this->shouldValidate($model, __METHOD__, $check)) {
+            return true;
+        }
+
+        $check = array_shift($check);
+
+        if (isset($check['tmp_name']) && file_exists($check['tmp_name'])) {
+            $info = getimagesize($check['tmp_name']);
+
+            return ($info && $info[0] >= $width && $info[1] >= $height);
+        }
+
+        return false;
+    }
+
+    /**
      * Return the mime type of the given file
      *
      * @param Model  $model Model using this behavior
