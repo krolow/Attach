@@ -321,7 +321,7 @@ class UploadBehavior extends ModelBehavior
      */
     public function getFileExtension($file)
     {
-        return pathinfo($file, PATHINFO_EXTENSION);
+        return strtolower(pathinfo($file, PATHINFO_EXTENSION));
     }
 
     /**
