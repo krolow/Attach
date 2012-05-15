@@ -42,8 +42,7 @@ class UploadBehavior extends ModelBehavior
         $this->types[$model->alias]  = array_keys($this->config[$model->alias]);
 
         foreach ($this->types[$model->alias] as $index => $type) {
-            $folder = $this->getUploadFolder($model, $type);
-            $this->isWritable($this->getUploadFolder($model, $type));
+            $this->isWritable($this->getBaseFolder($model, $type));
             $this->setRelationModel(
                 $model,
                 $this->types[$model->alias][$index]
@@ -325,6 +324,27 @@ class UploadBehavior extends ModelBehavior
     }
 
     /**
+     * Return the base upload folder (without dynamic folders)
+     *
+     * @param Model  $model Model using this behavior
+     * @param string $type  Type of the file upload
+     *
+     * @return string Path for the base upload folder
+     * @access public
+     */
+    public function getBaseFolder($model, $type)
+    {
+        $path = explode('{DS}', $this->config[$model->alias][$type]['dir']);
+        for ($i = 0; $i < count($path); $i++) {
+            if (strpos($path[$i], '{') !== false) {
+                $path = array_slice($path, 0, $i);
+                break;
+            }
+        }
+        return APP . implode(DS, $path) . DS;
+    }
+
+    /**
      * Return the upload folder that was set for the given type
      *
      * @param Model  $model Model using this behavior
@@ -335,11 +355,22 @@ class UploadBehavior extends ModelBehavior
      */
     public function getUploadFolder($model, $type)
     {
-        return APP . str_replace(
-            '{DS}',
-            DS,
-            $this->config[$model->alias][$type]['dir']
-        ) . DS;
+        $placeholders = array(
+          '{model}' => $model->alias,
+          '{type}' => $type,
+          '{index}' => $model->id
+        );
+        $path = explode('{DS}', $this->config[$model->alias][$type]['dir']);
+        $path = str_replace(array_keys($placeholders), array_values($placeholders), $path);
+        $folder = APP;
+        for ($i = 0; $i < count($path); $i++) {
+          $folder = $folder . $path[$i] . DS;
+          debug(array($folder => is_dir($folder)));
+          if (!is_dir($folder)) {
+            mkdir($folder);
+          }
+        };
+        return $folder;
     }
 
     /**
