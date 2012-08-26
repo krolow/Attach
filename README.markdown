@@ -23,7 +23,8 @@ In a model that needs uploading, replace the class declaration with something si
 
 It's important to remember that your model class can have your own fields, and it will have a extra relation with Attachment model with the fields that are upload.
 
-<pre>
+```php
+<?php
 	App::uses('AppModel', 'Model');
 
 	class Media extends AppModel {
@@ -125,10 +126,10 @@ It's important to remember that your model class can have your own fields, and i
 				),
 			),
 		);
-</pre>
+```
 
 You also need to specify the fields in your database like so
-<pre>
+```sql
 CREATE TABLE  `attachments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `filename` varchar(150) NOT NULL,
@@ -137,11 +138,12 @@ CREATE TABLE  `attachments` (
   `type` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
-</pre>
+```
 
 Create your upload view, make sure it's a multipart/form-data form, and the filename field is of type 'file':
 
-<pre>
+```php
+<?php
 		echo $this->Form->create('Media', array('type' => 'file'));
 		echo $this->Form->input('name');
 		echo $this->Form->input('image', array('type' => 'file'));
@@ -149,16 +151,16 @@ Create your upload view, make sure it's a multipart/form-data form, and the file
 		echo $this->Form->input('zip', array('type' => 'file'));
 		echo $this->Form->input('status');
 		echo $this->Form->end(__('Submit'));
-</pre>
+```
 
 
 
 Attach creates automatic for you the relationship with the model Attachment, for each type that you define:
 
-<pre>
+```php
 		var_dump($this->Media->AttachmentImage);
 		var_dump($this->Media->AttachmentSwf);
 		var_dump($this->Media->AttachmentZip);
-</pre>
+```
 
 It will be always "Attachment" plus the type!
