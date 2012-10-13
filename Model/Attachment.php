@@ -4,11 +4,11 @@
  * 
  * PHP Version 5.3+
  *
- * @category Plugin
- * @package  Attachment.Model
- * @author   Vinícius Krolow <krolow@gmail.com>
- * @license  GNU GENERAL PUBLIC LICENSE
- * @link     https://github.com/krolow/Attach
+ * @version       1.0
+ * @link          https://github.com/krolow/Attach
+ * @package       Attach.Model.Attachment
+ * @author        Vinícius Krolow <krolow@gmail.com>
+ * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
 
 App::uses('AppModel', 'Model');
