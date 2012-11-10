@@ -1,6 +1,6 @@
 <?php
 /**
- * AttachmentSchema
+ * AttachSchema
  * 
  * PHP Version 5.3+
  *
@@ -12,7 +12,7 @@
  */
 
 /**
- * AttachmentSchema
+ * AttachSchema
  * 
  * @category Plugin
  * @package  Attachment.Schema
@@ -20,7 +20,7 @@
  * @license  GNU GENERAL PUBLIC LICENSE
  * @link     https://github.com/krolow/Attach
  */
-class AttachmentSchema extends CakeSchema
+class AttachSchema extends CakeSchema
 {
     /**
      * Before callback
