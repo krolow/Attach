@@ -11,11 +11,9 @@ Attach contains one behavior that do everything for you, upload your file, resiz
 
 ## Installation
 - Clone from github : in your app directory type `git clone git@github.com:krolow/Attach.git Plugin/Attach`
-
-- Add as a git submodule : in your app directory type `git submodule add git@github.com:krolow/Attach.git Plugin/Attach`
 - Download an archive from github and extract it in `app/Plugin/Attach`
 
-* If you require thumbnails for image generation, download the latest copy of Imagine.phar here: https://github.com/avalanche123/Imagine/blob/master/imagine.phar
+* If you require thumbnails for image generation, download the latest copy of Imagine.phar here: https://github.com/downloads/avalanche123/Imagine/imagine-v0.3.0.phar
 
 ## Usage
 In a model that needs uploading, replace the class declaration with something similar to the following:
