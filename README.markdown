@@ -14,6 +14,8 @@ Attach contains one behavior that do everything for you, upload your file, resiz
 - Download an archive from github and extract it in `app/Plugin/Attach`
 
 * If you require thumbnails for image generation, download the latest copy of Imagine.phar here: https://github.com/downloads/avalanche123/Imagine/imagine-v0.3.0.phar
+and drag it into your vendors folder
+
 
 ## Usage
 In a model that needs uploading, replace the class declaration with something similar to the following:
