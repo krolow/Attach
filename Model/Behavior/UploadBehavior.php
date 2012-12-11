@@ -567,7 +567,7 @@ class UploadBehavior extends ModelBehavior
             ),
         );
 
-        if ($attachment !== false) {
+        if (!empty($attachment) && $attachment !== false) {
             $this->deleteAllFiles($model, $attachment);
             $data[$className]['id'] = $attachment[$className]['id'];
         } else {
