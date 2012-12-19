@@ -416,7 +416,7 @@ class UploadBehavior extends ModelBehavior
      * @return mixed False if the operation should abort. Any other result will continue.
      * @access public
      */
-    public function beforeDelete($model, $cascade = true)
+    public function beforeDelete(Model $model, $cascade = true)
     {
         if ($cascade = true) {
             foreach ($this->types[$model->alias] as $type) {
