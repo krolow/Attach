@@ -128,7 +128,16 @@ It's important to remember that your model class can have your own fields, and i
 		);
 ```
 
-You also need to specify the fields in your database like so
+You also must create one table in your database:
+
+Can be by schema:
+
+```
+cake.php schema create --plugin Attach
+```
+
+
+Can be by SQL:
 ```sql
 CREATE TABLE  `attachments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
