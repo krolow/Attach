@@ -20,7 +20,7 @@ class AttachHelper extends AppHelper {
 
     public function image($attach, $type = null, $options = array()) {
         if (!isset($attach['model'])) {
-            throw new Exception('It looks that you are trying to render not one attachment');
+            throw new Exception('Seems that the given attac is not really from the Attachment model');
         }
 
         if (!class_exists($attach['model'])) {
