@@ -1,4 +1,6 @@
 <?php
+App::uses('AppModel', 'Model');
+
 /**
  * Attachment Model
  * 
@@ -6,21 +8,9 @@
  *
  * @version       1.0
  * @link          https://github.com/krolow/Attach
- * @package       Attach.Model.Attachment
+ * @package       Attach.Model
  * @author        Vinícius Krolow <krolow@gmail.com>
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- */
-
-App::uses('AppModel', 'Model');
-
-/**
- * Attachment Model
- * 
- * @category Plugin
- * @package  Attachment.Model
- * @author   Vinícius Krolow <krolow@gmail.com>
- * @license  GNU GENERAL PUBLIC LICENSE
- * @link     https://github.com/krolow/Attach
  */
 class Attachment extends AppModel
 {

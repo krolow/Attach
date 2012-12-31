@@ -10,7 +10,7 @@
 *
 * @version       1.0
 * @link          https://github.com/krolow/Attach
-* @package       Attach.Model.UploadBehavior
+* @package       Attach.Model.Behavior
 * @author        Vinícius Krolow <krolow@gmail.com>
 * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
 */

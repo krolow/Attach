@@ -10,16 +10,6 @@
  * @author        Vinícius Krolow <krolow@gmail.com>
  * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
  */
-
-/**
- * AttachSchema
- * 
- * @category Plugin
- * @package  Attachment.Schema
- * @author   Vinícius Krolow <krolow@gmail.com>
- * @license  GNU GENERAL PUBLIC LICENSE
- * @link     https://github.com/krolow/Attach
- */
 class AttachSchema extends CakeSchema
 {
     /**
