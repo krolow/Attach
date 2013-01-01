@@ -28,6 +28,13 @@ class UploadBehavior extends ModelBehavior
     const IMAGINE_URL = 'https://github.com/avalanche123/Imagine';
 
     /**
+     * Set what are the multiple models
+     *
+     * @var array
+     */
+    private $multiple = array();
+
+    /**
      * Setup this behavior with the specified configuration settings.
      *
      * @param Model $model  Model using this behavior
@@ -379,10 +386,10 @@ class UploadBehavior extends ModelBehavior
             $data = $model->data;
 
             //set multiple as false by standard
-            $this->{$model->alias}->multiple = false;
+            $this->multiple[$model->alias] = false;
 
             if ($this->_isMultiple($model, $type)) {
-                $this->{$model->alias}->multiple = true;
+                $this->multiple[$model->alias] = true;
 
                 $check = isset($data[$model->alias])
                     && isset($data[$model->alias][$type])
@@ -394,7 +401,7 @@ class UploadBehavior extends ModelBehavior
 
             //case has the file update :)
             if ($check) {
-                if ($this->{$model->alias}->multiple) {
+                if (isset($this->multiple[$model->alias]) && $this->multiple[$model->alias]) {
                     foreach ($data[$model->alias][$type] as $index => $value) {
                         $this->saveFile($model, $type, $index);
                     }
