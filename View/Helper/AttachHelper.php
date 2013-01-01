@@ -1,6 +1,4 @@
 <?php
-App::uses('AppHelper', 'Helper');
-
 /**
  * Attachment Model
  * 
