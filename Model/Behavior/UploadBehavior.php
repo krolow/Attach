@@ -326,7 +326,7 @@ class UploadBehavior extends ModelBehavior
      * @return string File extension
      * @access public
      */
-    public function getFileExtension($file)
+    public function getFileExtension(Model $model, $file)
     {
         return strtolower(pathinfo($file, PATHINFO_EXTENSION));
     }
@@ -472,7 +472,7 @@ class UploadBehavior extends ModelBehavior
             return;
         }
 
-        $file   = $this->generateName($model, $type, $index);
+        $file   = $model->generateName($type, $index);
         $attach = $this->saveAttachment($model, $type, $file);
 
         if (!empty($uploadData['tmp_name'])) {
@@ -597,15 +597,16 @@ class UploadBehavior extends ModelBehavior
      */
     public function generateName(Model $model, $type, $index = null)
     {
-
         $dir = $this->getUploadFolder($model, $type);
 
         if (is_null($index)) {
             $extension = $this->getFileExtension(
+                $model,
                 $model->data[$model->alias][$type]['name']
             );
         } else {
             $extension = $this->getFileExtension(
+                $model,
                 $model->data[$model->alias][$type][$index]['name']
             );
         }
