@@ -188,6 +188,7 @@ class UploadBehavior extends ModelBehavior
         if (isset($check['name'])) {
             return in_array(
                 $this->getFileExtension(
+                    $model,
                     $check['name']
                 ),
                 $extensions
