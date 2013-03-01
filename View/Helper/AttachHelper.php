@@ -36,7 +36,7 @@ class AttachHelper extends AppHelper {
             $type = $type . '.';
         }
 
-        return $this->Html->image($path . $type . $attach['filename']);
+        return $this->Html->image($path . $type . $attach['filename'], $options);
     }
 
 }
