@@ -369,6 +369,57 @@ class UploadBehavior extends ModelBehavior
         throw new CakeException(sprintf('Folder is not writable: %s',  $dir));
     }
 
+    public function checkErrors($code)
+    {
+        $message = false;
+
+        switch ($code) { 
+            case UPLOAD_ERR_INI_SIZE: 
+                $message = "The uploaded file exceeds the upload_max_filesize directive in php.ini"; 
+                break; 
+            case UPLOAD_ERR_FORM_SIZE: 
+                $message = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form"; 
+                break; 
+            case UPLOAD_ERR_PARTIAL: 
+                $message = "The uploaded file was only partially uploaded"; 
+                break; 
+            case UPLOAD_ERR_NO_TMP_DIR: 
+                $message = "Missing a temporary folder"; 
+                break; 
+            case UPLOAD_ERR_EXTENSION: 
+                $message = "File upload stopped by extension"; 
+                break;
+        } 
+
+        return $message; 
+    }
+
+    /**
+     * beforeSave is called before a model is saved.
+     *
+     * @param Model   $model   Model using this behavior
+     *
+     * @return boolean
+     * @access public
+     */
+    public function beforeSave(Model $model)
+    {
+        parent::beforeSave($model);
+        
+        foreach ($this->types[$model->alias] as $type) {
+
+            $data = $model->data;
+                    
+            $check = $this->checkErrors($data[$model->alias][$type]['error']);
+
+            if ($check) {
+                throw new CakeException(sprintf('%s',  $check));
+            }
+
+        }
+
+    }
+
     /**
      * afterSave is called after a model is saved.
      *
