@@ -12,31 +12,43 @@
  */
 class AttachHelper extends AppHelper {
 
-    public $helpers = array(
-        'Html'
-    );
+/**
+ * Load Helpers
+ * 
+ * @var array
+ */
+	public $helpers = array(
+		'Html'
+	);
 
-    public function image($attach, $type = null, $options = array()) {
-        if (!isset($attach['model'])) {
-            throw new Exception('Seems that the given attac is not really from the Attachment model');
-        }
+/**
+ * Render image
+ * 
+ * @throws RunTimeException When no model is set in data or class does not exists
+ * 
+ * @return string
+ */
+	public function image($attach, $type = null, $options = array()) {
+		if (!isset($attach['model'])) {
+			throw new RunTimeException('Seems that the given attac is not really from the Attachment model');
+		}
 
-        if (!class_exists($attach['model'])) {
-            throw new Exception('Seems that there is no class for the given attach');   
-        }
+		if (!class_exists($attach['model'])) {
+			throw new RunTimeException('Seems that there is no class for the given attach');
+		}
 
-        $model = ClassRegistry::init($attach['model']);
-        $path = str_replace(
-            WWW_ROOT, 
-            '/', 
-            $model->getUploadFolder($attach['type'])
-        );
+		$model = ClassRegistry::init($attach['model']);
+		$path = str_replace(
+			WWW_ROOT,
+			'/',
+			$model->getUploadFolder($attach['type'])
+		);
 
-        if (!is_null($type)) {
-            $type = $type . '.';
-        }
+		if (!is_null($type)) {
+			$type = $type . '.';
+		}
 
-        return $this->Html->image($path . $type . $attach['filename'], $options);
-    }
+		return $this->Html->image($path . $type . $attach['filename'], $options);
+	}
 
 }
