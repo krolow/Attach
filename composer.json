@@ -1,0 +1,18 @@
+{
+	"name": "cobaia/attach",
+	"description": "Attach Plugin, that make upload easy in CakePHP 2.0 ",
+	"type": "cakephp-plugin",
+	"keywords": ["attach", "upload", "cakephp", "plugin", "thumbnail"],
+	"homepage": "https://github.com/krolow/Attach",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Vinícius Krolow",
+			"homepage": "http://krolow.com.br"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"composer/installers": "*"
+	}
+}
