@@ -90,7 +90,7 @@ class AttachSchema extends CakeSchema
  * @return bool
  */
 	public function after($event = array()) {
-		reutrn true;
+		return true;
 	}
 
 }
