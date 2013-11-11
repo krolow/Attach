@@ -651,17 +651,11 @@ class UploadBehavior extends ModelBehavior
  */
 	protected function _getImagine() {
 		if (!interface_exists('Imagine\Image\ImageInterface')) {
-			if (file_exists(VENDORS . 'imagine.phar')) {
-				include_once 'phar://' . VENDORS . 'imagine.phar';
-			} else {
-				throw new CakeException(
-					sprintf(
-						'Download imagine.phar: %s, and extract into vendor: %s',
-						self::IMAGINE_URL,
-						VENDORS
-					)
-				);
+			if (is_file(APP . 'Vendor' . 'autoload.php')) {
+				require APP . 'Vendor' . 'autoload.php';
 			}
+
+			throw new RuntimeExpcetion('We could not autoload imagine, please set the PSR-0 autoload');
 		}
 
 		return new \Imagine\Gd\Imagine();
