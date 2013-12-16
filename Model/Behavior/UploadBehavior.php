@@ -44,9 +44,16 @@ class UploadBehavior extends ModelBehavior
  */
 	public function setup(Model $model, $config = array()) {
 		$this->config[$model->alias] = $config;
+
 		$this->types[$model->alias] = array_keys($this->config[$model->alias]);
+		$typeIndex = array_search('Attach.type', $this->types[$model->alias]);
+
+		if ($typeIndex !== false) {
+			unset($this->types[$model->alias][$typeIndex]);
+		}
 
 		foreach ($this->types[$model->alias] as $index => $type) {
+
 			$folder = $this->getUploadFolder($model, $type);
 			$this->isWritable($this->getUploadFolder($model, $type));
 			$this->_setRelationModel(
@@ -439,7 +446,13 @@ class UploadBehavior extends ModelBehavior
 		}
 
 		$file = $model->generateName($type, $index);
-		$attach = $this->saveAttachment($model, $type, $file);
+		$attach = $this->saveAttachment(
+			$model,
+			$type,
+			$file,
+			$uploadData['name'],
+			$uploadData['size']
+		);
 
 		if (empty($uploadData['tmp_name'])) {
 			return;
@@ -513,7 +526,7 @@ class UploadBehavior extends ModelBehavior
  *
  * @return void
  */
-	public function saveAttachment(Model $model, $type, $filename) {
+	public function saveAttachment(Model $model, $type, $filename, $originalName = null, $size = null) {
 		$className = 'Attachment' . Inflector::camelize($type);
 		$attachment = false;
 
@@ -534,6 +547,8 @@ class UploadBehavior extends ModelBehavior
 				'foreign_key' => $model->id,
 				'filename' => basename($filename),
 				'type' => $type,
+				'original_name' => $originalName,
+				'size' => $size,
 			),
 		);
 
@@ -590,7 +605,7 @@ class UploadBehavior extends ModelBehavior
  * @return void
  */
 	public function createThumbs(Model $model, $type, $file) {
-		$imagine = $this->_getImagine();
+		$imagine = $model->getImagine();
 		$image = $imagine->open($file);
 		$thumbName = basename($file);
 		$thumbs = $this->config[$model->alias][$type]['thumbs'];
@@ -649,19 +664,17 @@ class UploadBehavior extends ModelBehavior
  *
  * @return \Imagine\Gd\Imagine
  */
-	protected function _getImagine() {
+	public function getImagine(Model $model) {
 		if (!interface_exists('Imagine\Image\ImageInterface')) {
-			if (file_exists(VENDORS . 'imagine.phar')) {
-				include_once 'phar://' . VENDORS . 'imagine.phar';
-			} else {
-				throw new CakeException(
-					sprintf(
-						'Download imagine.phar: %s, and extract into vendor: %s',
-						self::IMAGINE_URL,
-						VENDORS
-					)
-				);
+			if (is_file(APP . 'Vendor' . 'autoload.php')) {
+				require APP . 'Vendor' . 'autoload.php';
 			}
+
+			throw new RuntimeExpcetion('We could not autoload imagine, please set the PSR-0 autoload');
+		}
+
+		if (isset($this->config[$model->alias]['Attach.type']) && $this->config[$model->alias]['Attach.type'] == 'Imagick') {
+			return new \Imagine\Imagick\Imagine();
 		}
 
 		return new \Imagine\Gd\Imagine();
