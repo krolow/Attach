@@ -1,8 +1,8 @@
 # Attach 1.0
 
-Attach is a CakePHP 2.0 Plugin, that make your upload a simple task!
+Attach is a CakePHP 2.0 Plugin, that makes uploads a simple task!
 
-Attach contains one behavior that do everything for you, upload your file, resize your image.
+Attach contains a behavior that does everything for you, uploads your file, and resizes your images.
 
 ## Requirements
 
@@ -18,7 +18,7 @@ and drag it into your vendors folder with the name imagine.phar
 
 
 ## Usage
-In a model that needs uploading, replace the class declaration with something similar to the following:
+In a model that needs uploads, replace the class declaration with something similar to the following:
 
 
 It's important to remember that your model class can have your own fields, and it will have a extra relation with Attachment model with the fields that are upload.
@@ -130,14 +130,14 @@ It's important to remember that your model class can have your own fields, and i
 
 You also must create one table in your database:
 
-Can be by schema:
+You can do this with a schema:
 
 ```
 cake.php schema create --plugin Attach
 ```
 
 
-Can be by SQL:
+Or you can do it with SQL:
 ```sql
 CREATE TABLE  `attachments` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -149,7 +149,7 @@ CREATE TABLE  `attachments` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
 
-Create your upload view, make sure it's a multipart/form-data form, and the filename field is of type 'file':
+Create your upload view, make sure it's a multipart/form-data form, and that the filename field is of the type 'file':
 
 ```php
 <?php
@@ -164,7 +164,7 @@ Create your upload view, make sure it's a multipart/form-data form, and the file
 
 
 
-Attach creates automatic for you the relationship with the model Attachment, for each type that you define:
+Attach automatically creates the relationship with the model Attachment, for each type that you define:
 
 ```php
 		var_dump($this->Media->AttachmentImage);
