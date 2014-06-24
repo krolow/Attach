@@ -61,6 +61,16 @@ class AttachSchema extends CakeSchema
 			'comment' => '',
 			'charset' => 'utf8'
 		),
+		'original_name' => array(
+			'type' => 'string',
+			'null' => false,
+			'default' => NULL
+		),
+		'size' => array(
+			'type' => 'integer',
+			'null' => false,
+			'default' => NULL
+		),		
 		'indexes' => array(
 			'PRIMARY' => array('column' => 'id', 'unique' => 1)
 		),
