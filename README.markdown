@@ -13,8 +13,7 @@ Attach contains a behavior that does everything for you, uploads your file, and 
 - Clone from github : in your app directory type `git clone git@github.com:krolow/Attach.git Plugin/Attach`
 - Download an archive from github and extract it in `app/Plugin/Attach`
 
-* If you require thumbnails for image generation, download the latest copy of Imagine.phar here: https://github.com/downloads/avalanche123/Imagine/imagine-v0.3.0.phar
-and drag it into your vendors folder with the name imagine.phar
+* If you require thumbnails for image generation, you should install the dependencies using composer
 
 
 ## Usage
@@ -108,6 +107,7 @@ It's important to remember that your model class can have your own fields, and i
 
 		public $actsAs = array(
 			'Attach.Upload' => array(
+				'Attach.type' => 'Imagick', //you can choose btw Imagick or Gd to handle the thumbnails, in case you do not pass that default is GD
 				'swf' => array(
 				    'dir' => 'webroot{DS}uploads{DS}media{DS}swf'
 				),
@@ -145,6 +145,8 @@ CREATE TABLE  `attachments` (
   `model` varchar(150) NOT NULL,
   `foreign_key` int(11) NOT NULL,
   `type` varchar(100) NOT NULL,
+  `size` int(11) NOT NULL,
+  `original_name` varchar(150) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
@@ -173,3 +175,12 @@ Attach automatically creates the relationship with the model Attachment, for eac
 ```
 
 It will be always "Attachment" plus the type!
+
+## License
+
+Licensed under <a href="http://krolow.mit-license.org/">The MIT License</a>
+Redistributions of files must retain the above copyright notice.
+
+## Author
+
+Vinícius Krolow - krolow[at]gmail.com
