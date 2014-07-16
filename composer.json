@@ -1,0 +1,21 @@
+{
+    "name": "krolow/attach",
+    "description": "CakePHP Attachment Plugin",
+    "homepage": "http://github.com/krolow/Attach",
+    "license": "",
+    "authors": [
+        {
+            "name": "Vinicius Krolow",
+            "email": "",
+            "role": "Developer",
+            "homepage" : "https://github.com/krolow"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.*",
+        "CakePHP": ">=2.*"
+    },
+    "extra": {
+        "installer-name": "Attach"
+    }
+}
