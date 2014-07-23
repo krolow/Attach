@@ -1,7 +1,7 @@
 <?php
 /**
  * Attachment Model
- * 
+ *
  * PHP Version 5.3+
  *
  * @version       1.0
@@ -14,7 +14,7 @@ class AttachHelper extends AppHelper {
 
 /**
  * Load Helpers
- * 
+ *
  * @var array
  */
 	public $helpers = array(
@@ -23,14 +23,14 @@ class AttachHelper extends AppHelper {
 
 /**
  * Render image
- * 
+ *
  * @throws RunTimeException When no model is set in data or class does not exists
- * 
+ *
  * @return string
  */
 	public function image($attach, $type = null, $options = array()) {
 		if (!isset($attach['model'])) {
-			throw new RunTimeException('Seems that the given attac is not really from the Attachment model');
+			throw new RunTimeException('Seems that the given attach is not really from the Attachment model');
 		}
 
 		if (!class_exists($attach['model'])) {
