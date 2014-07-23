@@ -670,7 +670,7 @@ class UploadBehavior extends ModelBehavior
 				require APP . 'Vendor' . 'autoload.php';
 			}
 
-			throw new RuntimeExpcetion('We could not autoload imagine, please set the PSR-0 autoload');
+			throw new RuntimeException('We could not autoload imagine, please set the PSR-0 autoload');
 		}
 
 		if (isset($this->config[$model->alias]['Attach.type']) && $this->config[$model->alias]['Attach.type'] == 'Imagick') {
