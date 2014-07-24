@@ -642,11 +642,11 @@ class UploadBehavior extends ModelBehavior
  *
  * @return void
  */
-	public function createThumb($file, $name, $width, $height, $crop = false) {
-		$imagine = $this->getImagine();
+	public function createThumb(Model $model, $file, $name, $width, $height, $crop = false) {
+		$imagine = $this->getImagine($model);
 		$image = $imagine->open($file);
 
-		$this->__generateThumb(
+		$this->_generateThumb(
 			array(
 				'w' => $width,
 				'h' => $height,
@@ -696,7 +696,7 @@ class UploadBehavior extends ModelBehavior
 			$mode = Imagine\Image\ImageInterface::THUMBNAIL_INSET;
 		}
 
-		$thumbnail = $image->thumbnail(
+        $thumbnail = $image->thumbnail(
 			new Imagine\Image\Box(
 				$thumb['w'],
 				$thumb['h']
