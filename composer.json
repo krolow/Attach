@@ -11,6 +11,9 @@
 			"homepage": "http://krolow.com.br"
 		}
 	],
+    "config": {
+        "vendor-dir": "Vendor/"
+    },
 	"require": {
 		"php": ">=5.3.0",
 		"composer/installers": "*",
