@@ -87,7 +87,7 @@ class UploadBehavior extends ModelBehavior
 			'dependent' => true,
 			'conditions' => array(
 				'Attachment' . $type . '.model' => $model->alias,
-				'Attachment' . $type . '.type' => strtolower($type)),
+				'Attachment' . $type . '.type' => Inflector::underscore($type)),
 			'fields' => '',
 			'order' => ''
 		);
