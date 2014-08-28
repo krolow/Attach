@@ -13,7 +13,7 @@ Attach contains a behavior that does everything for you, uploads your file, and 
 - Clone from github : in your app directory type `git clone git@github.com:krolow/Attach.git Plugin/Attach`
 - Download an archive from github and extract it in `app/Plugin/Attach`
 
-* If you require thumbnails for image generation, you should install the dependencies using composer
+* If you require thumbnails for image generation, you should install the dependencies using composer, **and make sure to call the autoload of composer in your CakePHP application**
 
 
 ## Usage
