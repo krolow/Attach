@@ -44,15 +44,6 @@ class CreateAttachmentsTable extends CakeMigration {
 						'null' => false,
 						'length' => 100
 					),
-					'size' => array(
-						'type' => 'integer',
-						'null' => false
-					),
-					'original_name' => array(
-						'type' => 'string',
-						'null' => false,
-						'length' => 150
-					),
 					'indexes' => array(
 						'PRIMARY' => array(
 							'column' => 'id',
