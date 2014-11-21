@@ -73,13 +73,14 @@ class UploadBehavior extends ModelBehavior
  * @return void
  */
 	protected function _setRelationModel(Model $model, $type) {
-		$type = Inflector::camelize($type);
 		$relation = 'hasOne';
 
 		//case is defined multiple is a hasMany
 		if ($this->isMultiple($model, $type)) {
 			$relation = 'hasMany';
 		}
+
+		$type = Inflector::camelize($type);
 
 		$model->{$relation}['Attachment' . $type] = array(
 			'className' => 'Attachment',
