@@ -474,7 +474,7 @@ class UploadBehavior extends ModelBehavior
 		}
 
 		//generate thumbs
-		$model->createThumbs($model, $type, $file);
+		$model->createThumbs($type, $file);
 	}
 
 /**
