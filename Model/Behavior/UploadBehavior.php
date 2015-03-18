@@ -43,6 +43,7 @@ class UploadBehavior extends ModelBehavior
  * @return void
  */
 	public function setup(Model $model, $config = array()) {
+
 		$this->config[$model->alias] = $config;
 
 		$this->types[$model->alias] = array_keys($this->config[$model->alias]);
@@ -52,9 +53,9 @@ class UploadBehavior extends ModelBehavior
 			unset($this->types[$model->alias][$typeIndex]);
 		}
 
-		foreach ($this->types[$model->alias] as $index => $type) {
 
-			$folder = $this->getUploadFolder($model, $type);
+		foreach ($this->types[$model->alias] as $index => $type) {
+			$folder = $this->getUploadFolder($model,$type);
 			$this->isWritable($this->getUploadFolder($model, $type));
 			$this->_setRelationModel(
 				$model,
@@ -322,9 +323,16 @@ class UploadBehavior extends ModelBehavior
  * @return string Path for the upload folder
  */
 	public function getUploadFolder($model, $type) {
+
+		$placeholders = array( '{DS}' => DS );
+
+		if(isset($this->config[$model->alias][$type]['placeholders'])){
+			$placeholders = array_merge($placeholders, $this->config[$model->alias][$type]['placeholders']);
+		}
+
 		return APP . str_replace(
-			'{DS}',
-			DS,
+			array_keys($placeholders),
+			array_values($placeholders),
 			$this->config[$model->alias][$type]['dir']
 		) . DS;
 	}
