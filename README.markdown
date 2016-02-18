@@ -147,6 +147,7 @@ CREATE TABLE  `attachments` (
   `type` varchar(100) NOT NULL,
   `size` int(11) NOT NULL,
   `original_name` varchar(150) NOT NULL,
+  `md5` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8
 ```
