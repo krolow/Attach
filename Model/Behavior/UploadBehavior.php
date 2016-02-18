@@ -460,7 +460,8 @@ class UploadBehavior extends ModelBehavior
 			$type,
 			$file,
 			$uploadData['name'],
-			$uploadData['size']
+			$uploadData['size'],
+            md5_file($uploadData['tmp_name'])
 		);
 
 		if (empty($uploadData['tmp_name'])) {
@@ -535,7 +536,7 @@ class UploadBehavior extends ModelBehavior
  *
  * @return void
  */
-	public function saveAttachment(Model $model, $type, $filename, $originalName = null, $size = null) {
+	public function saveAttachment(Model $model, $type, $filename, $originalName = null, $size = null, $md5 = null) {
 		$className = 'Attachment' . Inflector::camelize($type);
 		$attachment = false;
 
@@ -558,6 +559,7 @@ class UploadBehavior extends ModelBehavior
 				'type' => $type,
 				'original_name' => $originalName,
 				'size' => $size,
+                'md5' => $md5
 			),
 		);
 
