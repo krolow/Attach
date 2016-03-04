@@ -547,6 +547,7 @@ class UploadBehavior extends ModelBehavior
 					'foreign_key' => $model->id,
 					'model' => $model->alias,
 					'type' => $type,
+					'filename LIKE' => '%' . strtolower(pathinfo($filename, PATHINFO_FILENAME)) . '%'
 				),
 			)
 		);
