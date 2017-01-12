@@ -677,11 +677,11 @@ class UploadBehavior extends ModelBehavior
  */
 	public function getImagine(Model $model) {
 		if (!interface_exists('Imagine\Image\ImageInterface')) {
-			if (is_file(APP . 'Vendor' . 'autoload.php')) {
-				require APP . 'Vendor' . 'autoload.php';
-			}
+			if (!is_file(_ATTACH_VENDOR_PATH_ . 'autoload.php')) {
+                throw new RuntimeException('We could not autoload imagine, please set the PSR-0 autoload');
+            }
 
-			throw new RuntimeExpcetion('We could not autoload imagine, please set the PSR-0 autoload');
+            require _ATTACH_VENDOR_PATH_ . 'autoload.php';
 		}
 
 		if (isset($this->config[$model->alias]['Attach.type']) && $this->config[$model->alias]['Attach.type'] == 'Imagick') {
